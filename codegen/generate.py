@@ -65,7 +65,7 @@ def codegen(
         if dataset == "humaneval":
             from evalplus.data import get_human_eval_plus
 
-            dataset = get_human_eval_plus(version=version)
+            dataset = get_human_eval_plus()
         elif dataset == "mbpp":
             from evalplus.data import get_mbpp_plus
 
@@ -130,6 +130,7 @@ def main(
     model: str,
     dataset: str,
     root: str,
+    trust_remote_code: bool = True,
     bs: int = 1,
     n_samples: int = 1,
     temperature: float = 0.0,
@@ -187,6 +188,7 @@ def main(
         batch_size=bs,
         temperature=temperature,
         dataset=dataset,
+        trust_remote_code=trust_remote_code,
         base_url=base_url,
         tp=tp,
         instruction_prefix=instruction_prefix,

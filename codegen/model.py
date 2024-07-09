@@ -202,6 +202,9 @@ class HfTorchDecoder(DecoderBase):
         if self.tokenizer.chat_template is None:
             self.eos += extra_eos_for_direct_completion(dataset)
 
+        self.load_model(name, **kwargs)
+    
+    def load_model(self, name, **kwargs):
         self.model = AutoModelForCausalLM.from_pretrained(name, **kwargs)
         self.model = self.model.to(self.device)
 
@@ -273,6 +276,12 @@ class GenenralHfTorchDecoder(HfTorchDecoder):
             prompt, self.instruction_prefix, self.response_prefix, self.tokenizer
         )
         return HfTorchDecoder.codegen(self, prompt, do_sample, num_samples)
+    
+class GeneralSparseMLTorchDecoder(GenenralHfTorchDecoder):
+    def load_model(self, name, **kwargs):
+        from sparseml.transformers import SparseAutoModelforCausalLM
+        self.model = SparseAutoModelforCausalLM.from_pretrained(name, **kwargs)
+        self.model = self.model.to(self.device)
 
 
 class OpenAIChatDecoder(DecoderBase):
@@ -417,6 +426,7 @@ def make_model(
     dataset: str,
     batch_size: int = 1,
     temperature: float = 0.0,
+    trust_remote_code: bool = True,
     tp=1,
     base_url=None,
     instruction_prefix=None,
@@ -428,6 +438,7 @@ def make_model(
             batch_size=batch_size,
             temperature=temperature,
             dataset=dataset,
+            trust_remote_code=trust_remote_code,
             tp=tp,
             instruction_prefix=instruction_prefix,
             response_prefix=response_prefix,
@@ -438,6 +449,17 @@ def make_model(
             batch_size=batch_size,
             temperature=temperature,
             dataset=dataset,
+            trust_remote_code=trust_remote_code,
+            instruction_prefix=instruction_prefix,
+            response_prefix=response_prefix,
+        )
+    elif backend == "sparseml":
+        return GenenralHfTorchDecoder(
+            name=model,
+            batch_size=batch_size,
+            temperature=temperature,
+            dataset=dataset,
+            trust_remote_code=trust_remote_code,
             instruction_prefix=instruction_prefix,
             response_prefix=response_prefix,
         )

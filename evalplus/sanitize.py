@@ -15,7 +15,7 @@ from evalplus.data import (
     write_directory,
     write_jsonl,
 )
-from evalplus.syncheck import syntax_check
+from syncheck import syntax_check
 
 CLASS_TYPE = "class_definition"
 FUNCTION_TYPE = "function_definition"
@@ -171,7 +171,7 @@ def script(
     # task_id -> entry_point
     entry_point = {}
     # merge two datasets
-    dataset = {**get_human_eval_plus(), **get_mbpp_plus(version=mbpp_version)}
+    dataset = {**get_human_eval_plus(), **get_mbpp_plus()}
 
     for task_id, problem in dataset.items():
         entry_point[task_id] = problem["entry_point"]
