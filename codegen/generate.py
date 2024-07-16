@@ -145,7 +145,7 @@ def main(
     jsonl_fmt: bool = False,
 ):
     assert dataset in ["humaneval", "mbpp"], f"Invalid dataset {dataset}"
-    assert backend in ["vllm", "hf", "openai"]
+    assert backend in ["vllm", "hf", "sparseml", "openai"]
     assert evalperf_type is None or evalperf_type in [
         "instruct",
         "perf-instruct",
