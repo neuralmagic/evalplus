@@ -38,6 +38,7 @@ EOS = [
     "\nif __name__",
     "\ndef main(",
     "\nprint(",
+    "<|end_of_text|>",
 ]
 
 
