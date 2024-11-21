@@ -39,6 +39,7 @@ EOS = [
     "\ndef main(",
     "\nprint(",
     "<|end_of_text|>",
+    "<|eot_id|>",
 ]
 
 
@@ -133,7 +134,7 @@ class DecoderBase(ABC):
 class VllmDecoder(DecoderBase):
     def __init__(self, name: str, dataset: str, tp: int, **kwargs) -> None:
         super().__init__(name, **kwargs)
-
+        
         kwargs = {
             "tensor_parallel_size": int(os.getenv("VLLM_N_GPUS", tp)),
             "dtype": self.dtype,
@@ -432,6 +433,7 @@ def make_model(
     base_url=None,
     instruction_prefix=None,
     response_prefix=None,
+    dtype="bfloat16",
 ):
     if backend == "vllm":
         return GeneralVllmDecoder(
@@ -443,6 +445,7 @@ def make_model(
             tp=tp,
             instruction_prefix=instruction_prefix,
             response_prefix=response_prefix,
+            dtype=dtype,
         )
     elif backend == "hf":
         return GenenralHfTorchDecoder(
