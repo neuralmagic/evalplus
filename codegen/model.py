@@ -15,8 +15,7 @@ except ImportError:
 
 # mistral.ai
 try:
-    from mistralai.client import MistralClient
-    from mistralai.models.chat_completion import ChatMessage
+    from mistralai import Mistral
 except ImportError:
     warn("MistralAI decoder will not work. Fix by `pip install mistralai`")
 
@@ -343,7 +342,7 @@ class OpenAIChatDecoder(DecoderBase):
 class MistralChatDecoder(DecoderBase):
     def __init__(self, name: str, **kwargs) -> None:
         super().__init__(name, **kwargs)
-        self.client = MistralClient(api_key=os.getenv("MISTRAL_API_KEY"))
+        self.client = Mistral(api_key=os.getenv("MISTRAL_API_KEY"))
 
     def codegen(
         self, prompt: str, do_sample: bool = True, num_samples: int = 200
@@ -363,11 +362,11 @@ class MistralChatDecoder(DecoderBase):
             ret = self.client.chat(
                 model=self.name,
                 messages=[
-                    ChatMessage(
-                        role="user",
-                        content=self.instruction_prefix
-                        + f"\n```python\n{prompt.strip()}\n```",
-                    )
+                    {
+                        "role": "user",
+                        "content": self.instruction_prefix
+                            + f"\n```python\n{prompt.strip()}\n```",
+                    },
                 ],
                 max_tokens=self.max_new_tokens,
                 **kwargs,
